@@ -68,6 +68,36 @@ func TestAddPhonebook(t *testing.T) {
 	}
 }
 
+func TestLookupPhonebook(t *testing.T) {
+	var p Phonebook
+	if err := p.Create(dbname); err != nil {
+		t.Errorf("Couldn't create phonebook: %v", err)
+		return
+	}
+	if err := p.Add("Stan Schwertly", "609-385-7359"); err != nil {
+		t.Errorf("Couldn't add me: %v", err)
+		return
+	}
+	matches, err := p.Lookup("Stan")
+	if err != nil {
+		t.Errorf("Couldn't find me: %v", err)
+		return
+	}
+	if len(matches) != 1 {
+		t.Errorf("Matches is weird: %#v", matches)
+		return
+	}
+	matches, err = p.Lookup("wow")
+	if err != nil {
+		t.Errorf("Got an error where should have gotten empty result: %v", err)
+		return
+	}
+	if len(matches) != 0 {
+		t.Errorf("Got results when should have gotten empty: %#v", matches)
+		return
+	}
+}
+
 func TestChangePhonebook(t *testing.T) {
 	var p Phonebook
 	if err := p.Create(dbname); err != nil {
@@ -126,12 +156,21 @@ func TestReversePhonebook(t *testing.T) {
 		t.Errorf("Couldn't add me: %v", err)
 		return
 	}
-	if name, err := p.Reverse("609-385-7359"); err != nil {
+	name, err := p.Reverse("609-385-7359")
+	if err != nil {
 		t.Errorf("Couldn't find me: %v", err)
 		return
 	}
-	if name, err := p.Reverse("wow"); name != "" {
+	if name != "Stan Schwertly" {
+		t.Errorf("Didn't find me, found: %v", name)
+		return
+	}
+	name, err = p.Reverse("wow")
+	if name != "" {
 		t.Error("We found something we shouldn't")
+	}
+	if err != nil {
+		t.Errorf("Should have just found nothing: %v", err)
 	}
 
 }

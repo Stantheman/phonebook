@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"regexp"
 )
 
 type Phonebook struct {
@@ -54,6 +55,25 @@ func (p *Phonebook) Save() (err error) {
 		return errors.New("wow: " + err.Error())
 	}
 	return nil
+}
+
+func (p *Phonebook) Lookup(name string) (results map[string]string, err error) {
+	results = make(map[string]string)
+	if p.filename == "" {
+		return nil, errors.New("Phone database filename doesn't exist")
+	}
+
+	for k, v := range p.entries {
+		match, err := regexp.Match(name, []byte(k))
+		if err != nil {
+			return nil, err
+		}
+		if match {
+			results[k] = v
+		}
+	}
+	return results, nil
+
 }
 
 func (p *Phonebook) Add(name, number string) (err error) {

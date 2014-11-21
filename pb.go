@@ -8,11 +8,9 @@ import (
 
 func main() {
 	var p phonebook.Phonebook
-	fmt.Println(p)
 	flag.Parse()
 	commands := flag.Args()
 	if len(commands) < 2 {
-		fmt.Println("usage: something i haven't written\n")
 		return
 	}
 
@@ -34,7 +32,14 @@ func main() {
 
 	// lookup Sarah hsphonebook.pb
 	if commands[0] == "lookup" {
-		fmt.Printf("%#v\n", p)
+		results, err := p.Lookup(commands[1])
+		if err != nil {
+			fmt.Printf("Couldnt lookup name: %v\n", err)
+		}
+		for k, v := range results {
+			fmt.Printf("%v: %v\n", k, v)
+		}
+		return
 	}
 
 	// add 'John Michael' '123 456 4323' hsphonebook.pb
