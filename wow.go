@@ -1,1 +1,0 @@
-{"Stan Schwertly":"other shit"}
